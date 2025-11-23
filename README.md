@@ -45,9 +45,9 @@ GridFlex uses three intelligent agents working in concert:
 
 ## Architecture
 
-```
-<img width="8610" height="5610" alt="gridflex_your_version" src="https://github.com/user-attachments/assets/66ecc109-d082-4c5d-86aa-89b6cac48f49" />
+<img width="1404" height="904" alt="image" src="https://github.com/user-attachments/assets/443e20bf-6d29-4af6-ba00-f5cbee49d4ea" />
 
+```
 ┌─────────────────────────────────────────────────────────┐
 │                    Agent Layer                          │
 ├──────────────┬──────────────────┬──────────────────────┤
