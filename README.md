@@ -46,30 +46,7 @@ GridFlex uses three intelligent agents working in concert:
 ## Architecture
 
 <img width="1404" height="904" alt="image" src="https://github.com/user-attachments/assets/443e20bf-6d29-4af6-ba00-f5cbee49d4ea" />
-
-```
-┌─────────────────────────────────────────────────────────┐
-│                    Agent Layer                          │
-├──────────────┬──────────────────┬──────────────────────┤
-│  Workload    │   Grid Market    │   Orchestration      │
-│  Intelligence│      Agent       │      Engine          │
-│    Agent     │                  │                      │
-└──────┬───────┴────────┬─────────┴──────────┬───────────┘
-       │                │                    │
-       └────────────────┼────────────────────┘
-                        │
-              ┌─────────▼──────────┐
-              │  Beckn Protocol    │
-              │   Integration      │
-              └─────────┬──────────┘
-                        │
-       ┌────────────────┼────────────────┐
-       │                │                │
-┌──────▼──────┐  ┌─────▼─────┐  ┌──────▼──────┐
-│   Energy    │  │  P415     │  │  Compute    │
-│   Markets   │  │ Flexibility│  │  Clusters   │
-└─────────────┘  └───────────┘  └─────────────┘
-```
+Figure 1: GridFlex System Architecture
 
 ### Technology Stack
 
