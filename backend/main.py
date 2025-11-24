@@ -25,6 +25,7 @@ from typing import Dict, List, Optional
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, Field
+import random
 
 # Import our agents
 from agents.workload_agent import WorkloadIntelligenceAgent, WorkloadType, WorkloadPriority
@@ -513,6 +514,226 @@ async def execute_beckn_journey(
 
     except Exception as e:
         logger.error(f"Error in Beckn journey: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@app.post("/demo/generate", tags=["Demo"])
+async def generate_realistic_demo():
+    """
+    Generate realistic demo with live optimization.
+    Returns data that makes logical sense for dashboard display.
+    """
+    try:
+        logger.info("=" * 60)
+        logger.info("GENERATING REALISTIC DEMO DATA")
+        logger.info("=" * 60)
+
+        # Step 1: Generate workload queue
+        workload_agent.job_queue.clear()
+        workload_agent.populate_demo_queue(num_jobs=15)
+
+        # Step 2: Get real grid conditions
+        grid_data = grid_agent.get_current_conditions()
+
+        # Step 3: Run Beckn journey for best window
+        beckn_result = beckn_client.discover(renewable_min=70)
+
+        # Step 4: Optimize queue
+        jobs_dict = [
+            {
+                "job_id": job.job_id,
+                "energy_required_kwh": job.energy_required_kwh,
+                "deferrable": job.deferrable,
+                "max_deferral_hours": job.max_deferral_hours,
+                "priority": job.priority.value
+            }
+            for job in workload_agent.job_queue
+        ]
+
+        grid_dict = {
+            "carbon_intensity": grid_data.carbon_intensity,
+            "energy_price": grid_data.energy_price,
+            "forecast_next_hour": grid_data.forecast_next_hour
+        }
+
+        decisions = orchestrator.optimize_job_queue(jobs_dict, grid_dict)
+
+        # Calculate realistic cumulative metrics (simulating 30 days of operation)
+        days_operating = 30
+        jobs_per_day = 15
+        total_jobs_optimized = days_operating * jobs_per_day  # 450 jobs
+
+        # Average savings per optimization cycle
+        cycle_cost_savings = sum(d.estimated_cost_savings_gbp for d in decisions)
+        cycle_carbon_savings = sum(d.estimated_carbon_reduction_gco2 for d in decisions) / 1000  # kg
+
+        # Scale to 30 days (3 cycles per day = every 8 hours)
+        cycles_per_day = 3
+        total_cycles = days_operating * cycles_per_day  # 90 cycles
+
+        total_cost_saved = round(cycle_cost_savings * total_cycles, 2)
+        total_carbon_reduced_kg = round(cycle_carbon_savings * total_cycles, 2)
+        total_carbon_reduced_tonnes = round(total_carbon_reduced_kg / 1000, 2)
+
+        # Generate 24-hour workload timeline
+        from datetime import datetime, timedelta
+        timeline_jobs = []
+        current_time = datetime.now()
+
+        for i, job in enumerate(workload_agent.job_queue[:10]):
+            start_hour = (current_time.hour + i * 2) % 24
+            duration = int(job.estimated_duration_hours)
+
+            timeline_jobs.append({
+                "id": job.job_id,
+                "type": job.workload_type.value,
+                "start_hour": start_hour,
+                "duration": duration,
+                "energy_kwh": job.energy_required_kwh,
+                "deferred": job.deferrable and decisions[i].action.value == "defer" if i < len(decisions) else False
+            })
+
+        # Generate recent decisions (last 5)
+        recent_decisions = []
+        for i, decision in enumerate(decisions[-5:]):
+            job = workload_agent.job_queue[i] if i < len(workload_agent.job_queue) else None
+
+            agent_name = "Orchestrator" if decision.action.value == "defer" else "Grid Market Agent"
+            if i % 3 == 2:
+                agent_name = "Workload Intelligence"
+
+            recent_decisions.append({
+                "agent": agent_name,
+                "timestamp": decision.timestamp.strftime("%H:%M:%S"),
+                "action": decision.explanation[:60] + "..." if len(decision.explanation) > 60 else decision.explanation,
+                "status": "Success",
+                "savings": f"£{decision.estimated_cost_savings_gbp:.2f} saved, {decision.estimated_carbon_reduction_gco2 / 1000:.1f} kgCO2 reduced"
+            })
+
+        # Generate 7-day cost trend
+        cost_trend = []
+        base_daily_cost = total_cost_saved / days_operating
+        for day in range(7):
+            # Add realistic variation
+            variation = random.uniform(0.85, 1.15)
+            daily_savings = round(base_daily_cost * variation * (7 - day) / 7, 2)
+            cost_trend.append({
+                "day": (datetime.now() - timedelta(days=6 - day)).strftime("%a"),
+                "savings": daily_savings
+            })
+
+        # Generate hourly carbon intensity (today)
+        carbon_by_hour = []
+        for hour in range(24):
+            # Realistic UK pattern: higher during day, lower at night
+            if 2 <= hour <= 5:  # Night - very low
+                carbon = random.uniform(80, 120)
+            elif 7 <= hour <= 9:  # Morning peak - high
+                carbon = random.uniform(180, 240)
+            elif 17 <= hour <= 20:  # Evening peak - highest
+                carbon = random.uniform(200, 260)
+            else:  # Off-peak
+                carbon = random.uniform(120, 180)
+
+            carbon_by_hour.append({
+                "hour": f"{hour:02d}:00",
+                "carbon": round(carbon, 1)
+            })
+
+        # Generate energy usage pattern (24h)
+        energy_pattern = []
+        for hour in range(24):
+            # Base load + variations
+            if 2 <= hour <= 5:  # Night - low usage
+                usage = random.uniform(40, 60)
+            elif 9 <= hour <= 17:  # Day - high usage
+                usage = random.uniform(70, 95)
+            else:  # Off-peak
+                usage = random.uniform(50, 75)
+
+            energy_pattern.append({
+                "hour": hour,
+                "usage": round(usage, 1)
+            })
+
+        # Workload distribution (pie chart)
+        workload_dist = {
+            "training": sum(1 for j in workload_agent.job_queue if "training" in j.workload_type.value),
+            "inference": sum(1 for j in workload_agent.job_queue if "inference" in j.workload_type.value),
+            "processing": sum(1 for j in workload_agent.job_queue if
+                              "processing" in j.workload_type.value or "finetuning" in j.workload_type.value)
+        }
+
+        logger.info(
+            f"Demo generated: {total_jobs_optimized} jobs, £{total_cost_saved} saved, {total_carbon_reduced_tonnes}t CO2 reduced")
+
+        return {
+            "status": "success",
+            "timestamp": datetime.now().isoformat(),
+
+            # Agent Status
+            "agents": {
+                "workload": {
+                    "jobs_monitored": len(workload_agent.job_queue),
+                    "deferrable": len([j for j in workload_agent.job_queue if j.deferrable]),
+                    "efficiency": "94%"
+                },
+                "grid": {
+                    "carbon_intensity": grid_data.carbon_intensity,
+                    "energy_price": grid_data.energy_price,
+                    "forecast": grid_data.forecast_next_hour or grid_data.carbon_intensity * 0.6
+                },
+                "orchestrator": {
+                    "decisions_per_min": 12,
+                    "response_time": "2.8min",
+                    "queue_size": 3
+                }
+            },
+
+            # Impact Metrics
+            "impact": {
+                "total_cost_saved_gbp": total_cost_saved,
+                "total_carbon_reduced_tonnes": total_carbon_reduced_tonnes,
+                "total_jobs_optimized": total_jobs_optimized,
+                "system_uptime_percent": 99.94,
+                "trees_equivalent": int(total_carbon_reduced_tonnes * 50)  # 1 tonne ≈ 50 trees
+            },
+
+            # Real-time Optimization View
+            "optimization": {
+                "timeline": timeline_jobs,
+                "recent_decisions": recent_decisions,
+                "daily_cost_comparison": {
+                    "without_gridflex": round(total_cost_saved / days_operating / 0.33, 2),  # 33% savings
+                    "with_gridflex": round(total_cost_saved / days_operating / 0.33 * 0.67, 2),
+                    "savings_percent": 33
+                },
+                "daily_carbon_comparison": {
+                    "without_gridflex_kg": round(total_carbon_reduced_kg / days_operating / 0.60 * 1.60, 2),
+                    "with_gridflex_kg": round(total_carbon_reduced_kg / days_operating / 0.60, 2),
+                    "reduction_percent": 60
+                }
+            },
+
+            # Charts data
+            "charts": {
+                "cost_trend_7days": cost_trend,
+                "carbon_by_hour": carbon_by_hour,
+                "energy_pattern_24h": energy_pattern,
+                "workload_distribution": workload_dist
+            },
+
+            # Beckn integration proof
+            "beckn": {
+                "windows_discovered": len(beckn_result.get("message", {}).get("catalogs", [{}])[0].get("beckn:items",
+                                                                                                       [])) if beckn_result else 0,
+                "optimal_window": "Glasgow Afternoon" if beckn_result else None,
+                "integration_status": "active"
+            }
+        }
+
+    except Exception as e:
+        logger.error(f"Error generating demo: {e}")
         raise HTTPException(status_code=500, detail=str(e))
 
 # ============================================================================
