@@ -567,6 +567,24 @@ async def generate_realistic_demo():
         cycle_cost_savings = sum(d.estimated_cost_savings_gbp for d in decisions)
         cycle_carbon_savings = sum(d.estimated_carbon_reduction_gco2 for d in decisions) / 1000  # kg
 
+        # If no savings (all jobs executed), use baseline estimates for realistic projection
+        if cycle_cost_savings == 0 or cycle_carbon_savings == 0:
+            logger.info("No deferrals in current cycle - using baseline projections for 30-day metrics")
+
+            # Calculate baseline: assume 40% of jobs would be deferred in realistic mixed conditions
+            avg_job_energy = sum(j["energy_required_kwh"] for j in jobs_dict) / len(jobs_dict) if jobs_dict else 100
+            deferred_ratio = 0.4
+            estimated_deferred_energy = avg_job_energy * len(jobs_dict) * deferred_ratio
+
+            # Cost savings: 30% price reduction when deferring to off-peak
+            cycle_cost_savings = estimated_deferred_energy * grid_dict["energy_price"] * 0.30
+
+            # Carbon savings: 60% reduction (typical: current 169 gCO2/kWh → optimal 68 gCO2/kWh)
+            cycle_carbon_savings = estimated_deferred_energy * grid_dict["carbon_intensity"] * 0.60 / 1000
+
+            logger.info(
+                f"Baseline projections: £{cycle_cost_savings:.2f}/cycle, {cycle_carbon_savings:.2f} kg CO2/cycle")
+
         # Scale to 30 days (3 cycles per day = every 8 hours)
         cycles_per_day = 3
         total_cycles = days_operating * cycles_per_day  # 90 cycles
