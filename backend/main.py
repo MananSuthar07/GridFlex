@@ -31,6 +31,9 @@ from agents.workload_agent import WorkloadIntelligenceAgent, WorkloadType, Workl
 from agents.grid_agent import GridMarketAgent
 from agents.orchestrator_agent import OrchestratorAgent
 
+# Import Beckn client
+from beckn_client import BecknClient
+
 # Configure logging
 logging.basicConfig(
     level=logging.INFO,
@@ -60,6 +63,7 @@ app.add_middleware(
 workload_agent = WorkloadIntelligenceAgent()
 grid_agent = GridMarketAgent()
 orchestrator = OrchestratorAgent()
+beckn_client = BecknClient()
 
 logger.info("GridFlex agents initialized successfully")
 
@@ -474,6 +478,42 @@ async def shutdown_event():
     """Cleanup on shutdown."""
     logger.info("GridFlex Backend Shutting Down...")
 
+
+@app.post("/beckn/execute-journey", tags=["Beckn Protocol"])
+async def execute_beckn_journey(
+        carbon_threshold: float = 200.0,
+        renewable_min: float = 70.0,
+        workload_energy_kwh: float = 150.0
+):
+    """
+    Execute complete Beckn protocol journey.
+    Demonstrates full discover→select→init→confirm workflow.
+    """
+    try:
+        logger.info("Executing Beckn journey via API...")
+
+        result = beckn_client.execute_full_journey(
+            carbon_threshold=carbon_threshold,
+            renewable_min=renewable_min,
+            workload_energy_kwh=workload_energy_kwh
+        )
+
+        if not result:
+            raise HTTPException(
+                status_code=500,
+                detail="Beckn journey failed"
+            )
+
+        return {
+            "status": "success",
+            "message": "Beckn journey completed successfully",
+            "order_id": result.get("message", {}).get("order", {}).get("id"),
+            "timestamp": datetime.now().isoformat()
+        }
+
+    except Exception as e:
+        logger.error(f"Error in Beckn journey: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
 
 # ============================================================================
 # RUN SERVER (for local testing)

@@ -338,6 +338,165 @@ class BecknClient:
             logger.error(f"Unexpected error in confirm: {e}")
             return None
 
+    def update_workload_shift(
+            self,
+            transaction_id: str,
+            order_id: str,
+            new_start_time: str,
+            reason: str = "Grid conditions changed"
+    ) -> Optional[Dict]:
+        """
+        Send workload shift update via Beckn.
+
+        Notifies grid that compute workload timing has changed.
+
+        Args:
+            transaction_id: Transaction ID from order
+            order_id: Order ID to update
+            new_start_time: New execution start time (ISO format)
+            reason: Reason for shift
+
+        Returns:
+            Update response, or None if failed
+        """
+        try:
+            context = self._generate_context("update", transaction_id)
+
+            payload = {
+                "context": context,
+                "message": {
+                    "order": {
+                        "id": order_id,
+                        "status": "rescheduled",
+                        "fulfillments": [{
+                            "state": {
+                                "descriptor": {
+                                    "code": "rescheduled",
+                                    "name": reason
+                                }
+                            },
+                            "stops": [{
+                                "type": "start",
+                                "time": {
+                                    "timestamp": new_start_time
+                                }
+                            }]
+                        }]
+                    }
+                }
+            }
+
+            logger.info(f"Beckn update (workload shift): order={order_id}, new_time={new_start_time}")
+
+            response = requests.post(
+                f"{self.base_url}/update",
+                json=payload,
+                timeout=self.timeout
+            )
+
+            response.raise_for_status()
+            data = response.json()
+
+            logger.info("Beckn update (workload shift) successful")
+
+            return data
+
+        except requests.exceptions.RequestException as e:
+            logger.error(f"Beckn update failed: {e}")
+            return None
+        except Exception as e:
+            logger.error(f"Unexpected error in update: {e}")
+            return None
+
+    def update_carbon_intensity(
+            self,
+            transaction_id: str,
+            order_id: str,
+            current_carbon: float,
+            current_energy_kwh: float,
+            progress_percent: int
+    ) -> Optional[Dict]:
+        """
+        Send real-time execution update with carbon tracking.
+
+        Updates grid on job progress and actual carbon consumption.
+
+        Args:
+            transaction_id: Transaction ID from order
+            order_id: Order ID to update
+            current_carbon: Current carbon intensity (gCO2/kWh)
+            current_energy_kwh: Energy consumed so far
+            progress_percent: Job completion percentage (0-100)
+
+        Returns:
+            Update response, or None if failed
+        """
+        try:
+            context = self._generate_context("update", transaction_id)
+
+            payload = {
+                "context": context,
+                "message": {
+                    "order": {
+                        "id": order_id,
+                        "status": "in-progress",
+                        "fulfillments": [{
+                            "state": {
+                                "descriptor": {
+                                    "code": "in-progress",
+                                    "name": f"{progress_percent}% complete"
+                                }
+                            },
+                            "tracking": {
+                                "status": "active",
+                                "location": {
+                                    "descriptor": {
+                                        "name": f"Energy consumed: {current_energy_kwh} kWh"
+                                    }
+                                }
+                            }
+                        }],
+                        "quote": {
+                            "price": {
+                                "value": round(current_energy_kwh * 0.10, 2),
+                                "currency": "GBP"
+                            }
+                        },
+                        "tags": [{
+                            "descriptor": {"name": "carbon_tracking"},
+                            "list": [
+                                {"descriptor": {"name": "current_carbon_intensity"}, "value": str(current_carbon)},
+                                {"descriptor": {"name": "energy_consumed_kwh"}, "value": str(current_energy_kwh)},
+                                {"descriptor": {"name": "progress_percent"}, "value": str(progress_percent)}
+                            ]
+                        }]
+                    }
+                }
+            }
+
+            logger.info(
+                f"Beckn update (carbon): order={order_id}, carbon={current_carbon}, progress={progress_percent}%")
+
+            response = requests.post(
+                f"{self.base_url}/update",
+                json=payload,
+                timeout=self.timeout
+            )
+
+            response.raise_for_status()
+            data = response.json()
+
+            logger.info("Beckn update (carbon tracking) successful")
+
+            return data
+
+        except requests.exceptions.RequestException as e:
+            logger.error(f"Beckn update failed: {e}")
+            return None
+        except Exception as e:
+            logger.error(f"Unexpected error in update: {e}")
+            return None
+
     def execute_full_journey(
             self,
             carbon_threshold: float = 200.0,
