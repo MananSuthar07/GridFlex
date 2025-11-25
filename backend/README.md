@@ -82,6 +82,13 @@ GridFlex backend implements a three-agent architecture that optimizes AI workloa
 - `POST /demo/trigger` - Generate demo jobs and run optimization
 - `POST /demo/generate` - Generate realistic 30-day demo data with projections
 
+  <div align="center">
+    <img width="1470" height="836" alt="image" src="https://github.com/user-attachments/assets/4f47f1cf-1dc3-4bbc-bde8-995786243b74" />
+    <br>
+      <em>Figure 2: API Endpoints.</em>
+</div>
+
+
 ---
 
 ## Installation
