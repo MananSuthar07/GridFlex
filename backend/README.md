@@ -44,7 +44,11 @@ GridFlex backend implements a three-agent architecture that optimizes AI workloa
 - Calculates P415 flexibility market revenue opportunities
 - Maintains full decision audit trail
 
+<div align="center">
   <img width="1195" height="494" alt="image" src="https://github.com/user-attachments/assets/93adfab4-c83c-499f-a170-56320cae3565" />
+    <br>
+      <em>Figure 1: Three-Agent System.</em>
+</div>
 
 
 ---
