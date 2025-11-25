@@ -7,7 +7,7 @@
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.6.2-blue)](https://www.typescriptlang.org/)
 [![Tailwind CSS](https://img.shields.io/badge/Tailwind-3.4.1-38bdf8)](https://tailwindcss.com/)
 
-**Live Demo:** [Your Lovable URL Here]  
+**Live Demo:** https://gridflex.lovable.app/ 
 **Backend API:** https://gridflex-backend-152882144214.europe-west2.run.app
 
 ---
