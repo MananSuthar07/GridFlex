@@ -1,525 +1,433 @@
-# GridFlex: Intelligent Compute-Energy Convergence Platform
+GridFlex Dashboard - Frontend
+Real-time monitoring and optimization dashboard for intelligent compute-energy convergence
 
-[![Live Demo](https://img.shields.io/badge/Demo-Live-success?style=for-the-badge)](https://gridflex.lovable.app/)
-[![API Docs](https://img.shields.io/badge/API-Docs-blue?style=for-the-badge)](https://gridflex-backend-152882144214.europe-west2.run.app/docs)
-[![License](https://img.shields.io/badge/License-MIT-yellow?style=for-the-badge)](LICENSE)
+Built with Lovable React TypeScript Tailwind CSS
 
-> **Revolutionising Sustainable Energy and Compute Integration**  
-> Optimising UK Energy Markets through Intelligent Compute Workload Flexibility and Carbon Reduction
+Live Demo: https://gridflex.lovable.app/ Backend API: https://gridflex-backend-152882144214.europe-west2.run.app
 
-Built for **DEG Hackathon 2025** | Scale Space, London
+📖 Overview
+The GridFlex Dashboard is a professional React-based web application that provides real-time monitoring and control of an AI-powered compute workload optimization system. It visualizes the interaction between three intelligent agents managing energy-efficient compute scheduling under carbon intensity constraints.
 
----
+Key Features
+🤖 Real-time Agent Monitoring - Track 3 AI agents (Workload Intelligence, Grid Market, Orchestrator)
+📊 Live Optimization Timeline - 24-hour workload scheduling with visual indicators
+💰 Impact Analytics - Cost savings, carbon reduction, and P415 flexibility revenue tracking
+🌍 Beckn Protocol Integration - Discover and utilize optimal energy windows across regions
+📝 Complete Audit Trail - Full decision logging with reasoning and outcomes
+⚡ Carbon Cap Enforcement - Visual indicators for carbon intensity thresholds (150g CO2/kWh)
+🏗️ Architecture
+Tech Stack
+Framework: React 18.3.1 with TypeScript
+Styling: Tailwind CSS 3.4.1 + shadcn/ui components
+Charts: Recharts 2.x for data visualization
+Build Tool: Vite 5.4.2
+State Management: React Hooks (useState, useEffect)
+API Communication: Fetch API with real-time polling
+Project Structure
+frontend/
+├── src/
+│   ├── components/
+│   │   ├── dashboard/
+│   │   │   ├── AgentStatus.tsx          # Three AI agent monitoring cards
+│   │   │   ├── Optimization.tsx         # Timeline and decision feed
+│   │   │   ├── Impact.tsx               # Metrics and charts
+│   │   │   ├── Sidebar.tsx              # System status and Beckn integration
+│   │   │   └── modals/
+│   │   │       ├── WorkloadAgentModal.tsx
+│   │   │       ├── GridMarketModal.tsx
+│   │   │       ├── OrchestratorModal.tsx
+│   │   │       └── AuditLogModal.tsx    # Full audit trail viewer
+│   │   └── ui/                          # shadcn/ui components
+│   ├── services/
+│   │   ├── api.ts                       # Backend API integration
+│   │   ├── mockData.ts                  # Fallback mock data
+│   │   └── dataMapper.ts                # Response transformation
+│   ├── pages/
+│   │   ├── Dashboard.tsx                # Main dashboard container
+│   │   ├── Index.tsx                    # Landing page
+│   │   └── NotFound.tsx                 # 404 page
+│   ├── hooks/                           # Custom React hooks
+│   ├── lib/                             # Utility functions
+│   └── assets/                          # Images and static files
+├── public/
+├── package.json
+├── vite.config.ts
+├── tailwind.config.ts
+└── tsconfig.json
+🚀 Getting Started
+Prerequisites
+Node.js 18+ or Bun
+npm, yarn, or bun package manager
+Installation
+Clone the repository:
 
-## 🎯 Overview
-
-**GridFlex** is the first production-grade platform that treats datacenter compute workloads as tradeable flexibility assets in the UK's P415 energy markets. By intelligently aligning AI workload scheduling with real-time grid dynamics, GridFlex enables:
-
-- **30-40% energy cost reductions** for compute operators
-- **60% carbon intensity reduction** through smart scheduling
-- **£800M addressable market** opportunity via P415 flexibility participation
-- **Sub-50ms optimization decisions** with 100% SLA compliance
-
-### The Problem We Solve
-
-AI datacenters consume **20% of global electricity**, running 24/7 regardless of whether power comes from wind farms or coal plants. UK carbon intensity varies **tenfold** daily, yet datacenters ignore this completely—resulting in **£2.5 billion wasted annually**.
-
-### Our Solution
-
-GridFlex uses a three-agent AI system to schedule deferrable workloads (AI training, batch processing, data pipelines) during clean, cheap energy windows—turning datacenter waste into revenue while cutting carbon emissions in half.
-
----
-
-## 🏗️ Architecture
-
-### Three-Agent Orchestration System
-```
-┌─────────────────────────────────────────────────────────────┐
-│                    GridFlex Platform                         │
-├─────────────────────────────────────────────────────────────┤
-│                                                              │
-│  ┌────────────────┐  ┌────────────────┐  ┌──────────────┐  │
-│  │   Workload     │  │  Grid Market   │  │              │  │
-│  │  Intelligence  │◄─┤     Agent      │◄─┤ Orchestrator │  │
-│  │     Agent      │  │                │  │              │  │
-│  └────────────────┘  └────────────────┘  └──────────────┘  │
-│         │                    │                    │         │
-│         ▼                    ▼                    ▼         │
-│   ┌──────────────────────────────────────────────────┐     │
-│   │  Optimization Engine (Multi-Objective)          │     │
-│   │  • Cost Minimization (30-40% reduction)         │     │
-│   │  • Carbon Reduction (60% reduction)             │     │
-│   │  • SLA Compliance (100% critical jobs)          │     │
-│   └──────────────────────────────────────────────────┘     │
-│                                                              │
-└─────────────────────────────────────────────────────────────┘
-         │                                          │
-         ▼                                          ▼
-┌──────────────────────┐              ┌──────────────────────┐
-│  UK National Grid    │              │  DEG Beckn Protocol  │
-│  Carbon Intensity API│              │  P415 Flexibility    │
-│  (Real-time data)    │              │  Market Integration  │
-└──────────────────────┘              └──────────────────────┘
-```
-
-#### 1. **Workload Intelligence Agent**
-- Monitors compute job queue (15 jobs in demo)
-- Identifies deferrable vs. critical workloads
-- Forecasts demand spikes
-- Tracks energy requirements per job
-
-#### 2. **Grid Market Agent**
-- Fetches live UK Grid carbon intensity (updates every 30 minutes)
-- Provides next-hour carbon forecasts
-- Assesses market conditions for execution recommendations
-- Tracks energy pricing based on time-of-day patterns
-
-#### 3. **Orchestrator Agent**
-- Makes optimization decisions in <50ms (40x faster than P415 requirement)
-- Balances three objectives: cost, carbon, SLA
-- Implements carbon intensity threshold (default: 150 gCO2/kWh)
-- Calculates P415 flexibility market revenue opportunities
-- Maintains complete decision audit trail
-
----
-
-## ✨ Key Features
-
-### 🤖 **Production-Grade AI Orchestration**
-- Three autonomous agents coordinate workload and grid optimization
-- Real-time decision-making with sub-50ms latency
-- Multi-objective optimization (cost + carbon + SLA)
-
-### 📊 **Real-Time Grid Integration**
-- Live UK National Grid Carbon Intensity API (30-min updates)
-- Authentic market data for P415 flexibility calculations
-- 8 UK energy windows across grid zones via Beckn Protocol
-
-### 💰 **P415 Flexibility Market Revenue**
-- **Dynamic Moderation**: £17.50/MW/hour
-- **Dynamic Containment**: £9.50/MW/hour
-- **Demand Turn Up**: £12/MW/hour
-- Average earnings: £8-9/hour from deferred workloads
-
-### 🌍 **Complete Beckn Protocol Integration**
-- Full discover→select→init→confirm transaction lifecycle
-- Real-time catalog discovery across 8 UK regions
-- Order confirmation with transaction IDs
-
-### 📈 **Live Impact Metrics**
-- **Cost Savings**: £1,800/month per deployment
-- **Carbon Reduction**: 10 tonnes CO2/month (60% reduction)
-- **Jobs Optimized**: 450+ workloads in testing
-- **SLA Compliance**: 100% (zero violations)
-
----
-
-## 🚀 Quick Start
-
-### Prerequisites
-- **Backend**: Python 3.9+, pip
-- **Frontend**: Node.js 18+, npm/yarn/bun
-- Git
-
-### 1. Clone Repository
-```bash
 git clone https://github.com/MananSuthar07/GridFlex.git
-cd GridFlex
-```
+cd GridFlex/frontend
+Install dependencies:
 
-### 2. Backend Setup
-```bash
-cd backend
+npm install
+# or
+yarn install
+# or
+bun install
+Configure backend URL:
 
-# Install dependencies
-pip install -r requirements.txt
+Open src/services/api.ts and verify the backend URL:
 
-# Run server
-python3 main.py
-```
-Backend runs at `http://localhost:8000`  
-API docs at `http://localhost:8000/docs`
+const API_BASE_URL = 'https://gridflex-backend-152882144214.europe-west2.run.app';
+Development
+Run the development server:
 
-### 3. Frontend Setup
-```bash
-cd frontend
+npm run dev
+# or
+yarn dev
+# or
+bun dev
+The app will be available at http://localhost:5173
 
-# Install dependencies
+Build for Production
+npm run build
+# or
+yarn build
+# or
+bun run build
+Build output will be in the dist/ folder.
+
+Preview Production Build
+npm run preview
+# or
+yarn preview
+# or
+bun preview
+📱 Dashboard Pages
+1. Agent Status
+Path: /dashboard (default tab)
+
+Monitors three AI agents in real-time:
+
+Workload Intelligence Agent (Blue)
+
+Jobs monitored: Current workload count
+Deferrable jobs: Flexible scheduling opportunities
+Efficiency: System performance metric
+Mini chart: Job trend over 12 hours
+Grid Market Agent (Green)
+
+Carbon intensity: Current gCO2/kWh
+Energy price: Real-time £/kWh
+Forecast: Trend prediction (Improving/Rising)
+Mini chart: Carbon intensity history
+Orchestrator (Orange)
+
+Decisions/min: Optimization rate
+Response time: Average decision latency
+Queue: Pending jobs count
+Mini chart: Decision volume
+Interactions:
+
+Click "View Details" on any card to see comprehensive metrics
+Real-time updates every 5 seconds
+2. Optimization
+Path: /dashboard?tab=optimization
+
+Visualizes the optimization engine:
+
+Grid Forecast Panel
+
+Shows predicted carbon intensity drop over next 6 hours
+Highlights optimal compute windows (e.g., "14:00-17:00")
+Target carbon threshold: 95g CO2/kWh
+24-Hour Workload Timeline
+
+Visual timeline showing scheduled workloads
+Color-coded by type:
+Blue: ML Training / Model Finetuning
+Green: Inference (batch/real-time)
+Orange: Batch Processing / Data Processing
+"NOW" marker indicates current time
+Hover over blocks for job details
+Recent Decisions Feed
+
+Live stream of agent decisions
+Shows: Agent, timestamp, action, outcome, savings
+Agent icons: ⚙️ Orchestrator, 🧠 Workload, 📊 Grid
+Impact Analysis Panel
+
+Daily cost comparison (with/without GridFlex)
+Daily carbon comparison (with reduction percentage)
+Real-time savings calculation
+Button:
+
+"View Full Audit Log" - Opens modal with complete decision history
+3. Impact
+Path: /dashboard?tab=impact
+
+Displays cumulative system impact:
+
+Hero Metrics (Top Row)
+
+Cost Saved: Total £ saved since deployment
+Carbon Reduced: Total tonnes CO2 avoided
+System Uptime: Availability percentage
+Additional Metrics (Second Row)
+
+P415 Flexibility Revenue: £ earned from flexibility participation
+Jobs Optimized: Total workloads managed (450)
+Carbon Cap Status: 171/150 gCO2/kWh (Above Cap indicator)
+Beckn Protocol: Active status with 8 windows discovered
+Charts (2x2 Grid)
+
+Cost Savings Trend (7 Days): Line chart showing daily savings
+Carbon Intensity by Hour (Today): Horizontal bars, color-coded by intensity
+Workload Distribution: Donut chart (Training/Inference/Processing split)
+Energy Usage Pattern (24h): Area chart showing hourly consumption
+🔌 Backend Integration
+API Endpoints Used
+The frontend polls these backend endpoints:
+
+// Primary data source (every 5 seconds)
+POST /demo/generate
+→ Returns: agents, optimization, impact, charts, beckn data
+
+// Fallback endpoints (if needed)
+GET /agents/status
+GET /metrics/system
+GET /decisions/recent
+Data Flow
+Initial Load:
+
+Fetch complete dashboard state from /demo/generate
+Parse and map response to UI components
+Display loading skeletons during fetch
+Real-time Updates:
+
+Poll backend every 5 seconds
+Update dashboard with new values
+Animate number changes (count-up effect)
+Update "Last Updated" timestamp
+Demo Mode:
+
+User clicks "Run Demo" button
+Triggers POST to /demo/generate
+Dashboard updates with new optimization scenario
+Shows visual indicators of agent activity
+Error Handling:
+
+Network errors: Display "Connection lost" warning
+Timeout (45s): Show "Backend starting up" message
+Backend returns zeros: Use mock fallback data
+Keep last successful data visible on errors
+Mock Data Fallback
+If backend returns zero values, the frontend automatically uses realistic mock data:
+
+Cost saved: £4,396.5
+Carbon reduced: 12.03 tonnes CO2
+Jobs optimized: 450
+P415 revenue: £659 (15% of cost saved)
+This ensures a working demo even during backend issues.
+
+🎨 UI Components
+Component Library: shadcn/ui
+Pre-built, customizable components used:
+
+Cards - Agent status containers
+Badges - Status indicators (ACTIVE, Success, Above Cap)
+Dialogs/Modals - View Details overlays
+Tables - Audit log data display
+Charts - Recharts integration
+Toast - Notifications for system events
+Tabs - Navigation between dashboard sections
+All components are styled with Tailwind CSS and follow a consistent design system:
+
+Colors: Blue (#2563EB), Green (#10B981), Orange (#F59E0B)
+Typography: Inter font family
+Spacing: 8px grid system (16px, 24px, 32px)
+Borders: 12px border-radius for cards
+Shadows: Subtle elevation for depth
+🔥 Key Features Implementation
+Real-time Updates
+// Auto-refresh every 5 seconds
+useEffect(() => {
+  const interval = setInterval(() => {
+    fetchDashboardData();
+  }, 5000);
+  
+  return () => clearInterval(interval);
+}, []);
+Smooth Number Animations
+Numbers count up when values change, not instant jumps:
+
+// Example: £4,200 → £4,396 animates smoothly over 0.5s
+Carbon Cap Enforcement Visualization
+// Visual indicator when carbon > threshold
+{carbonIntensity > 150 && (
+  <Badge variant="destructive">Above Cap</Badge>
+)}
+Beckn Protocol Display
+Sidebar shows:
+
+Status: Active ✓
+Windows discovered: 8
+Optimal window: "Glasgow Afternoon"
+Starts in: 13.7 hours
+Savings potential: 8% cleaner, 96% cheaper
+Queued jobs: 0
+Audit Log Modal
+Full-featured audit trail viewer:
+
+Searchable by text
+Sortable by column
+Paginated (50 rows/page)
+Exportable to CSV
+Shows: Timestamp, Agent, Decision, Reasoning, Outcome, Impact
+🎯 Minimum Requirements Met
+✅ Cost optimization under carbon cap - Real-time display of £ saved with 150g threshold
+✅ Flexible compute modeling - 15 jobs tracked, 9 deferrable, 94% efficiency
+✅ Grid signal forecasting - 18% drop prediction, optimal window identification
+✅ Orchestration commands - Visible decisions (defer, shift, schedule)
+✅ Audit logging - Complete decision history with reasoning
+✅ Beckn catalog/order - 8 windows discovered, order lifecycle visualization
+
+🛠️ Development Guide
+Adding a New Component
+Create component in appropriate folder:
+
+# Dashboard component
+touch src/components/dashboard/NewFeature.tsx
+
+# UI component (shadcn)
+npx shadcn-ui@latest add [component-name]
+Import and use:
+
+import NewFeature from '@/components/dashboard/NewFeature';
+Modifying API Integration
+Edit src/services/api.ts:
+
+// Add new endpoint
+export const getNewData = async () => {
+  const response = await fetch(`${API_BASE_URL}/new-endpoint`);
+  return response.json();
+};
+Updating Styles
+Tailwind classes are used throughout. To customize:
+
+Edit tailwind.config.ts for theme changes
+Modify component classes directly
+Add custom CSS to src/index.css if needed
+Environment Variables
+Create .env.local for local overrides:
+
+VITE_API_BASE_URL=http://localhost:8000
+Access in code:
+
+const API_URL = import.meta.env.VITE_API_BASE_URL;
+📦 Dependencies
+Core
+react (18.3.1) - UI framework
+react-dom (18.3.1) - DOM rendering
+typescript (5.6.2) - Type safety
+vite (5.4.2) - Build tool
+UI & Styling
+tailwindcss (3.4.1) - Utility-first CSS
+@radix-ui/* - Headless UI primitives (shadcn foundation)
+lucide-react (0.263.1) - Icon library
+class-variance-authority - Component variants
+clsx / tailwind-merge - Class management
+Data Visualization
+recharts (2.x) - Chart library
+Integrated with shadcn/ui Chart components
+Routing & Navigation
+react-router-dom (6.x) - Client-side routing
+wouter - Lightweight alternative (if used)
+Utilities
+date-fns - Date formatting
+sonner - Toast notifications
+🐛 Troubleshooting
+Backend Connection Issues
+Problem: "Backend Status: DISCONNECTED"
+
+Solutions:
+
+Verify backend is running: Visit https://gridflex-backend-152882144214.europe-west2.run.app/health
+Check CORS is enabled on backend
+Wait 10-30 seconds for cold start (Google Cloud Run)
+Frontend will show "Waking up backend..." during cold start
+Zero Values in Impact Tab
+Problem: Cost Saved shows £0, Carbon Reduced shows 0.00
+
+Cause: Backend calculation not working or returning zeros
+
+Solution: Frontend automatically falls back to mock data when backend returns zeros
+
+Charts Not Displaying
+Problem: Empty chart areas or missing data
+
+Solutions:
+
+Check browser console for errors
+Verify backend response contains chart data
+Check response.charts.cost_trend_7days has data
+Ensure Recharts is properly imported
+Build Errors
+Problem: TypeScript errors or build failures
+
+Solutions:
+
+# Clear cache and reinstall
+rm -rf node_modules package-lock.json
 npm install
 
-# Run development server
-npm run dev
-```
-Frontend runs at `http://localhost:5173`
+# Check TypeScript
+npm run type-check
 
-### 4. Test the System
-```bash
-# Test health endpoint
-curl http://localhost:8000/health
+# Fix auto-fixable issues
+npm run lint -- --fix
+🚢 Deployment
+Lovable.dev (Current)
+The dashboard is deployed on Lovable's platform:
 
-# Generate demo data
-curl -X POST http://localhost:8000/demo/generate
-
-# Execute Beckn Protocol journey
-curl -X POST "http://localhost:8000/beckn/execute-journey?carbon_threshold=200&renewable_min=70&workload_energy_kwh=150"
-```
-
----
-
-## 📂 Project Structure
-```
-GridFlex/
-├── backend/                    # FastAPI backend
-│   ├── main.py                # API endpoints and application logic
-│   ├── beckn_client.py        # Beckn Protocol client
-│   ├── agents/
-│   │   ├── workload_agent.py  # Workload Intelligence Agent
-│   │   ├── grid_agent.py      # Grid Market Agent
-│   │   └── orchestrator_agent.py  # Orchestrator with P415 calculations
-│   ├── models/                # Pydantic data models
-│   ├── requirements.txt       # Python dependencies
-│   ├── Dockerfile            # Container configuration
-│   └── README.md             # Backend documentation
-│
-├── frontend/                  # React TypeScript dashboard
-│   ├── src/
-│   │   ├── components/
-│   │   │   ├── dashboard/    # Dashboard UI components
-│   │   │   │   ├── AgentStatus.tsx
-│   │   │   │   ├── Optimization.tsx
-│   │   │   │   ├── Impact.tsx
-│   │   │   │   └── Sidebar.tsx
-│   │   │   └── ui/           # shadcn/ui components
-│   │   ├── services/
-│   │   │   ├── api.ts        # Backend API integration
-│   │   │   ├── mockData.ts   # Fallback mock data
-│   │   │   └── dataMapper.ts # Response transformation
-│   │   ├── pages/
-│   │   │   ├── Dashboard.tsx # Main dashboard
-│   │   │   └── Index.tsx     # Landing page
-│   │   └── hooks/            # Custom React hooks
-│   ├── package.json
-│   ├── vite.config.ts
-│   └── README.md             # Frontend documentation
-│
-└── README.md                 # This file
-```
-
----
-
-## 🌐 Live Deployments
-
-| Service | URL | Status |
-|---------|-----|--------|
-| **Frontend Dashboard** | [gridflex.lovable.app](https://gridflex.lovable.app/) | ✅ Live |
-| **Backend API** | [gridflex-backend...run.app](https://gridflex-backend-152882144214.europe-west2.run.app) | ✅ Live |
-| **API Documentation** | [/docs](https://gridflex-backend-152882144214.europe-west2.run.app/docs) | ✅ Live |
-
----
-
-## 📊 Tech Stack
-
-### Backend
-- **Framework**: FastAPI (Python 3.9+)
-- **Server**: Uvicorn ASGI
-- **APIs**: requests, pydantic
-- **Deployment**: Google Cloud Run
-- **Uptime**: 99.9%
-
-### Frontend
-- **Framework**: React 18.3.1 + TypeScript 5.6.2
-- **Build Tool**: Vite 5.4.2
-- **Styling**: Tailwind CSS 3.4.1
-- **Components**: shadcn/ui + Radix UI
-- **Charts**: Recharts 2.x
-- **Icons**: Lucide React
-- **Deployment**: Lovable.dev
-
-### Integrations
-- **UK National Grid Carbon Intensity API** (Real-time data)
-- **DEG Beckn Protocol Sandbox** (P415 flexibility markets)
-- **Google Cloud Platform** (Backend hosting)
-
----
-
-## 🎯 Key Algorithms
-
-### Carbon-Aware Scheduling
-```python
-if current_carbon > CARBON_THRESHOLD (150 gCO2/kWh):
-    action = DEFER
-    defer_until = forecast_low_carbon_window()
-else:
-    action = EXECUTE_NOW
-```
-
-### P415 Revenue Calculation
-```python
-# Capacity from deferred jobs
-capacity_mw = sum(job.energy_kwh for job in deferred_jobs) / 1000
-
-# Service type based on grid conditions
-if carbon > 200 and peak_demand:
-    service = "Dynamic Moderation" (£17.50/MW/h)
-elif carbon < 100:
-    service = "Demand Turn Up" (£12/MW/h)
-else:
-    service = "Dynamic Containment" (£9.50/MW/h)
-
-revenue_per_hour = capacity_mw * service_rate
-```
-
-### Multi-Objective Optimization
-- **Cost**: Defer to off-peak windows (30% average reduction)
-- **Carbon**: Execute during low-carbon periods (60% average reduction)
-- **SLA**: Critical jobs execute immediately regardless of conditions
-
----
-
-## 📈 Performance Metrics
-
-| Metric | Value | Notes |
-|--------|-------|-------|
-| **Decision Time** | 0.05ms | 40x faster than P415 requirement (2s) |
-| **SLA Compliance** | 100% | All critical jobs execute immediately |
-| **System Uptime** | 99.9% | Google Cloud Run deployment |
-| **Cost Savings** | £1,800/month | Per deployment (30-day average) |
-| **Carbon Reduction** | 10 tonnes/month | 60% reduction vs. unoptimized |
-| **Jobs Optimized** | 450+ | In testing phase |
-| **P415 Revenue** | £8-9/hour | From deferred workloads |
-
----
-
-## 🔌 API Reference
-
-### Backend Endpoints
-
-#### System
-- `GET /` - API information
-- `GET /health` - Health check with agent status
-
-#### Agents
-- `GET /agents/status` - Real-time status of all three agents
-
-#### Grid Market
-- `GET /grid/current` - Current UK Grid conditions (carbon, price, forecast)
-
-#### Workload
-- `GET /workload/queue` - Current job queue with statistics
-
-#### Optimization
-- `POST /optimize` - Trigger optimization for queue
-- `GET /decisions/recent` - Recent optimization decisions
-
-#### Metrics
-- `GET /metrics/system` - System-wide performance metrics
-
-#### Beckn Protocol
-- `POST /beckn/execute-journey` - Execute full Beckn transaction flow
-
-#### Demo
-- `POST /demo/trigger` - Generate demo jobs and run optimization
-- `POST /demo/generate` - Generate realistic 30-day demo data
-
-Full API documentation: [https://gridflex-backend-152882144214.europe-west2.run.app/docs](https://gridflex-backend-152882144214.europe-west2.run.app/docs)
-
----
-
-## 🧪 Testing
-
-### Backend Tests
-```bash
-# Test health endpoint
-curl http://localhost:8000/health
-
-# Test optimization
-curl -X POST http://localhost:8000/demo/generate
-
-# Test Beckn journey
-curl -X POST "http://localhost:8000/beckn/execute-journey?carbon_threshold=200&renewable_min=70&workload_energy_kwh=150"
-```
-
-### Frontend Tests
-```bash
-# Run development server
-npm run dev
-
-# Build for production
-npm run build
-
-# Preview production build
-npm run preview
-```
-
----
-
-## 🚢 Deployment
-
-### Backend (Google Cloud Run)
-```bash
-# Set project
-gcloud config set project gridflex-479215
+Changes pushed via Lovable interface
+Auto-deployment on save
+Live URL: [Your URL]
+Alternative: Vercel
+# Install Vercel CLI
+npm i -g vercel
 
 # Deploy
-gcloud run deploy gridflex-backend \
-  --source . \
-  --platform managed \
-  --region europe-west2 \
-  --allow-unauthenticated \
-  --port 8080
-```
-
-### Frontend (Lovable.dev)
-- Deployed via Lovable platform interface
-- Auto-deployment on save
-- Live at: [https://gridflex.lovable.app/](https://gridflex.lovable.app/)
-
-### Alternative: Vercel/Netlify
-```bash
-# Vercel
 vercel --prod
-
-# Netlify
+Alternative: Netlify
+# Build
 npm run build
+
+# Deploy dist/ folder via Netlify UI or CLI
 netlify deploy --prod --dir=dist
-```
+Environment Variables for Production
+Set these in your deployment platform:
 
----
+VITE_API_BASE_URL - Backend API URL
+VITE_ENABLE_MOCK_DATA - true/false (fallback behavior)
+📄 License
+This project was built for the DEG Hackathon 2025.
 
-## 📊 Data Sources
+👥 Team
+Created by:
 
-### Real Data ✅
-- **UK Grid Carbon Intensity**: [api.carbonintensity.org.uk](https://api.carbonintensity.org.uk/)
-  - Updates every 30 minutes
-  - Provides current and forecasted carbon intensity
-  - No authentication required
-  
-- **Beckn Protocol**: DEG Hackathon BAP Sandbox
-  - 8 UK energy windows across grid zones
-  - Real-time catalog discovery
-  - Order confirmation with transaction IDs
-  
-- **P415 Market Prices**: National Grid ESO published clearing prices
-  - Dynamic Moderation: £17.50/MW/h
-  - Dynamic Containment: £9.50/MW/h
-  - Demand Turn Up: £12/MW/h
+Meet Bhorania - Backend & Optimization Logic
+Manan Suthar - Frontend Dashboard & Integration
+Contact:
 
-### Simulated Data ⚠️
-- Energy pricing (time-of-day patterns)
-- Historical trend projections
-- Demo job generation (for testing purposes)
-
----
-
-## 🎨 Dashboard Features
-
-### 1. Agent Status
-Real-time monitoring of three AI agents:
-- **Workload Intelligence Agent** (Blue) - Job monitoring, deferrable identification
-- **Grid Market Agent** (Green) - Carbon intensity, pricing, forecasts
-- **Orchestrator** (Orange) - Decision rate, response time, queue status
-
-### 2. Optimization Timeline
-- 24-hour workload scheduling visualization
-- Color-coded by workload type (Training, Inference, Processing)
-- Live "NOW" marker showing current time
-- Recent decisions feed with audit trail
-
-### 3. Impact Analytics
-- Cost saved (£)
-- Carbon reduced (tonnes CO2)
-- System uptime (%)
-- P415 flexibility revenue (£)
-- Jobs optimized count
-- Carbon cap status indicator
-
-### 4. Charts & Visualizations
-- Cost savings trend (7 days)
-- Carbon intensity by hour (today)
-- Workload distribution (donut chart)
-- Energy usage pattern (24h area chart)
-
-### 5. Beckn Protocol Integration
-- Active status with 8 windows discovered
-- Optimal window identification (e.g., "Glasgow Afternoon")
-- Countdown to next optimal window
-- Savings potential display
-
----
-
-## 🤝 Contributing
-
-We welcome contributions! Please follow these steps:
-
-1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit your changes (`git commit -m 'Add amazing feature'`)
-4. Push to the branch (`git push origin feature/amazing-feature`)
-5. Open a Pull Request
-
-### Development Guidelines
-- Follow existing code style (TypeScript for frontend, Python for backend)
-- Add tests for new features
-- Update documentation as needed
-- Ensure all tests pass before submitting PR
-
----
-
-## 📄 License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
----
-
-## 👥 Team
-
-**Built for DEG Hackathon 2025**
-
-| Role | Name | GitHub | Email |
-|------|------|--------|-------|
-| **Backend & AI Logic** | Meet Bhorania | [@meetbhorania](https://github.com/meetbhorania) | - |
-| **Frontend & Integration** | Manan Suthar | [@MananSuthar07](https://github.com/MananSuthar07) | manannsuthar@gmail.com |
-
----
-
-## 🙏 Acknowledgments
-
-- **UK National Grid ESO** for Carbon Intensity API
-- **DEG Hackathon** for Beckn Protocol sandbox access
-- **Google Cloud Platform** for deployment infrastructure
-- **Lovable.dev** for rapid frontend development
-- **shadcn/ui** for beautiful UI components
-- **Recharts** for data visualization
-
----
-
-## 📞 Contact
-
-- **GitHub**: [github.com/MananSuthar07/GridFlex](https://github.com/MananSuthar07/GridFlex)
-- **Live Demo**: [gridflex.lovable.app](https://gridflex.lovable.app/)
-- **API Docs**: [gridflex-backend...run.app/docs](https://gridflex-backend-152882144214.europe-west2.run.app/docs)
-- **Email**: manannsuthar@gmail.com
-
----
-
-## 🎯 Why GridFlex Wins
-
-1. **Exclusive Flexibility Approach** - Only system treating compute as P415 flexibility asset
-2. **Production-Deployed** - Real APIs, not mockups (National Grid + Beckn Protocol)
-3. **Industry Collaboration** - Complete Beckn Protocol integration
-4. **Proven Impact** - 60% carbon reduction in testing (not projected, measured)
-
-**For 30 years, datacenters consumed energy passively. We're making them active grid participants—paid flexibility providers that enable AI growth without destabilizing grids or the climate.**
-
-**It's the only way both industries survive the next decade.**
-
----
-
-<div align="center">
-
-**Built with ❤️ for DEG Hackathon 2025 | Scale Space, London**
-
-[![GitHub stars](https://img.shields.io/github/stars/MananSuthar07/GridFlex?style=social)](https://github.com/MananSuthar07/GridFlex)
-[![Live Demo](https://img.shields.io/badge/🚀-Try%20Live%20Demo-success)](https://gridflex.lovable.app/)
-
-</div>
+Email: manannsuthar@gmail.com
+GitHub: @MananSuthar07
+🙏 Acknowledgments
+Built with Lovable.dev for rapid development
+UI components from shadcn/ui
+Icons from Lucide
+Charts powered by Recharts
+Backend deployed on Google Cloud Run
+📝 Notes
+This frontend was built using Lovable.dev's AI-powered platform for rapid prototyping
+Real-time data polling interval: 5 seconds
+Mock data fallback ensures demo always works
+Designed for 1920x1080 presentation displays
+Optimized for Chrome/Edge browsers
+Built for DEG Hackathon 2025 | London
