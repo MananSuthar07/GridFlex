@@ -516,7 +516,6 @@ async def execute_beckn_journey(
         logger.error(f"Error in Beckn journey: {e}")
         raise HTTPException(status_code=500, detail=str(e))
 
-
 @app.post("/demo/generate", tags=["Demo"])
 async def generate_realistic_demo():
     """

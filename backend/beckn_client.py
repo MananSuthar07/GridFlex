@@ -599,7 +599,21 @@ class BecknClient:
         logger.info(f"Carbon Intensity: {carbon_intensity} gCO2/kWh")
         logger.info("=" * 60)
 
-        return confirm_response
+        # Return enriched response with order details
+        return {
+            "context": confirm_response.get("context", {}),
+            "message": {
+                "order": {
+                    "id": order_id,
+                    "status": "confirmed",
+                    "provider": {"id": provider_id},
+                    "items": [{
+                        "id": item_id,
+                        "carbon_intensity": carbon_intensity
+                    }]
+                }
+            }
+        }
 
 
 # Test the client
